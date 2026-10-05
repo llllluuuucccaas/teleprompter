@@ -1,0 +1,6 @@
+{
+  "name": "Teleprompter Profissional",
+  "description": "Teleprompter online, gratuito e moderno com rolagem suave, espelhamento para vidro/câmera, controle de velocidade e atalhos de teclado.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
