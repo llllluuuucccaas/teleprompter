@@ -4,7 +4,6 @@ import {
   Pause,
   RotateCcw,
   FlipHorizontal,
-  FlipVertical,
   Type,
   Gauge,
   Maximize,
@@ -16,18 +15,16 @@ import {
   Download,
   Check,
   Keyboard,
-  SlidersHorizontal,
-  Sparkles,
   Clock,
   FileText,
-  AlignLeft,
-  ChevronUp,
-  ChevronDown,
-  Volume2,
-  Code
+  Code,
+  Smartphone,
+  Sparkles,
+  HelpCircle,
+  Sun
 } from 'lucide-react';
 
-// Preset scripts for rapid onboarding and demonstration
+// Preset sample scripts for testing
 const PRESET_SCRIPTS = [
   {
     title: 'Apresentação em Vídeo / YouTube',
@@ -39,7 +36,7 @@ Você já reparou como os grandes apresentadores de televisão conseguem falar d
 
 O segredo por trás disso é uma superfície reflexiva posicionada exatamente na frente da lente da câmera, que reflete o texto espelhado enquanto a câmera filma através do vidro sem capturar o reflexo.
 
-Com este Teleprompter, você tem controle total da velocidade com o teclado ou mouse, pode espelhar o texto para o seu espelho ou usar diretamente na tela do seu computador ou tablet.
+Com este Teleprompter, você tem controle total da velocidade com o teclado ou touch no celular, pode espelhar o texto para o seu espelho ou usar diretamente na tela do seu computador ou tablet.
 
 Respire fundo, mantenha a calma, sorria para a lente e conte a sua história com autoridade!
 
@@ -60,7 +57,7 @@ Estamos construindo o futuro da produtividade, e hoje convidamos vocês a fazere
 Obrigado pelo seu tempo e estamos abertos para perguntas!`
   },
   {
-    title: 'Noticiário / Podcast',
+    title: 'Noticiário / Podcast Rápido',
     text: `Edição extraordinária das 20 horas.
 
 Principais destaques do dia: avanços recentes na tecnologia impulsionam produtores de mídia independente em todo o mundo.
@@ -73,61 +70,68 @@ Fique conosco para a cobertura completa dos temas em destaque após o breve inte
 
 // Single file standalone HTML generator
 function generateStandaloneHtml(initialText: string, speed: number, fontSize: number, isMirrored: boolean, color: string): string {
+  const safeText = initialText.replace(/`/g, '\\`').replace(/\$/g, '\\$');
   return `<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Teleprompter Pessoal e Gratuito</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-    body {
+    body, html {
       background-color: #000000;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow-x: hidden;
-      min-height: 100vh;
+      height: 100%;
+      touch-action: manipulation;
       -webkit-font-smoothing: antialiased;
     }
     
-    /* Config / Setup Screen */
+    /* Config Screen */
     #setup-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 24px;
+      padding: 20px;
       max-width: 900px;
       margin: 0 auto;
     }
     .header-box {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       width: 100%;
     }
     .badge {
       display: inline-block;
-      font-size: 12px;
-      letter-spacing: 0.05em;
+      font-size: 11px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #facc15;
       font-weight: 700;
       margin-bottom: 8px;
+      background: #1c1917;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      border: 1px solid #292524;
     }
     h1 {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #ffffff;
     }
     p.subtitle {
-      font-size: 14px;
+      font-size: 13px;
       color: #a3a3a3;
     }
     .editor-card {
@@ -138,14 +142,38 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       padding: 20px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.8);
     }
+    .textarea-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #d4d4d4;
+    }
+    .sample-btn {
+      background: #171717;
+      color: #a3a3a3;
+      border: 1px solid #262626;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .sample-btn:hover {
+      color: #ffffff;
+      background: #262626;
+    }
     textarea {
       width: 100%;
-      height: 320px;
+      height: 280px;
       background: #000000;
       color: #f5f5f5;
       border: 1px solid #333333;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       font-size: 16px;
       line-height: 1.6;
       resize: vertical;
@@ -159,13 +187,15 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 12px;
-      font-size: 13px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #1c1c1c;
+      font-size: 12px;
       color: #737373;
     }
     .btn-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       margin-top: 20px;
       flex-wrap: wrap;
     }
@@ -179,34 +209,34 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       align-items: center;
       justify-content: center;
       gap: 8px;
+      user-select: none;
+      touch-action: manipulation;
     }
     .btn-primary {
       background: #facc15;
       color: #000000;
       border: none;
-      padding: 14px 28px;
+      padding: 16px 28px;
       font-size: 16px;
       font-weight: 700;
-      flex: 1;
-      min-width: 220px;
+      flex: 2;
+      min-width: 200px;
+      box-shadow: 0 4px 20px rgba(250, 204, 21, 0.3);
     }
-    .btn-primary:hover {
+    .btn-primary:active {
+      transform: scale(0.98);
       background: #eab308;
-      transform: translateY(-1px);
     }
     .btn-secondary {
       background: #171717;
       color: #e5e5e5;
       border: 1px solid #262626;
-      padding: 12px 18px;
+      padding: 14px 18px;
       font-size: 14px;
-    }
-    .btn-secondary:hover {
-      background: #262626;
-      color: #ffffff;
+      flex: 1;
     }
 
-    /* Teleprompter Screen */
+    /* Reading Screen */
     #prompter-screen {
       display: none;
       position: fixed;
@@ -214,7 +244,11 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       background: #000000;
       overflow-y: scroll;
       overflow-x: hidden;
-      scroll-behavior: auto;
+      scroll-behavior: auto !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+      z-index: 10;
     }
     #prompter-screen::-webkit-scrollbar {
       display: none;
@@ -226,9 +260,11 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
 
     /* Reading Content */
     #prompter-container {
-      max-width: 900px;
+      max-width: 820px;
       margin: 0 auto;
-      padding: 40vh 32px 60vh 32px;
+      padding: 35vh 20px 100vh 20px;
+      min-height: 150vh;
+      text-align: center;
       transition: transform 0.2s ease;
       will-change: transform;
     }
@@ -236,61 +272,80 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       white-space: pre-wrap;
       word-break: break-word;
       line-height: 1.6;
-      font-weight: 600;
+      font-weight: 700;
+      color: ${color};
+      font-size: ${fontSize}px;
     }
 
-    /* Mirroring Classes */
+    /* Mirroring */
     .mirror-x {
       transform: scaleX(-1);
     }
 
-    /* Reading Marker (Eye-line Indicator) */
+    /* Eye Line Guide */
     #eye-guide {
       position: fixed;
       top: 35%;
       left: 0;
       right: 0;
-      height: 60px;
+      height: 44px;
       pointer-events: none;
       border-top: 2px dashed rgba(250, 204, 21, 0.4);
       border-bottom: 2px dashed rgba(250, 204, 21, 0.4);
       background: rgba(250, 204, 21, 0.05);
-      z-index: 40;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 16px;
     }
-    .guide-arrow {
+    .guide-marker {
       color: #facc15;
-      font-size: 24px;
-      font-weight: bold;
+      font-size: 18px;
+      font-weight: 900;
       opacity: 0.8;
     }
 
-    /* Floating HUD Controls */
-    #hud-panel {
+    /* Mobile Quick Tap Hint */
+    #tap-hint {
       position: fixed;
-      bottom: 24px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(18, 18, 18, 0.94);
+      background: rgba(23, 23, 23, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      color: #a3a3a3;
+      pointer-events: none;
+      z-index: 40;
+      transition: opacity 0.5s ease;
+    }
+
+    /* HUD Bar */
+    #hud-panel {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 20, 20, 0.95);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 9999px;
-      padding: 8px 16px;
+      padding: 6px 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       z-index: 50;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      transition: opacity 0.2s ease, transform 0.2s ease;
       max-width: 95vw;
       overflow-x: auto;
     }
     #hud-panel.hidden {
       opacity: 0;
-      transform: translate(-50%, 40px);
+      transform: translate(-50%, 60px);
       pointer-events: none;
     }
 
@@ -298,13 +353,14 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       background: #262626;
       color: #ffffff;
       border: 1px solid #404040;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 9999px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
+      min-height: 40px;
     }
-    .hud-btn:hover {
+    .hud-btn:active {
       background: #333333;
     }
     .hud-btn.active {
@@ -318,11 +374,13 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       border: none;
       padding: 10px 20px;
       border-radius: 9999px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
+      min-height: 42px;
+      box-shadow: 0 2px 10px rgba(250, 204, 21, 0.3);
     }
-    .hud-btn-main:hover {
-      background: #eab308;
+    .hud-btn-main:active {
+      transform: scale(0.96);
     }
 
     .control-group {
@@ -346,78 +404,61 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       border-radius: 3px;
       background: #333;
       outline: none;
+      width: 70px;
     }
     .val-display {
-      font-size: 12px;
+      font-size: 11px;
       font-variant-numeric: tabular-nums;
-      color: #ffffff;
-      min-width: 28px;
+      color: #facc15;
+      font-weight: 700;
+      min-width: 26px;
     }
 
-    /* Toggle HUD Visibility Button */
-    #toggle-hud-btn {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      background: rgba(23, 23, 23, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      z-index: 60;
-      backdrop-filter: blur(8px);
-    }
-    #toggle-hud-btn:hover {
-      background: rgba(38, 38, 38, 0.9);
-    }
-
-    /* Exit Button */
     #exit-btn {
       position: fixed;
-      top: 16px;
-      left: 16px;
-      background: rgba(23, 23, 23, 0.7);
+      top: max(12px, env(safe-area-inset-top, 12px));
+      left: 14px;
+      background: rgba(23, 23, 23, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
       padding: 8px 14px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       z-index: 60;
       backdrop-filter: blur(8px);
     }
-    #exit-btn:hover {
-      background: #dc2626;
-      border-color: #ef4444;
-    }
 
-    /* Countdown Overlay */
-    #countdown-overlay {
+    #toggle-hud-btn {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 70;
-      font-size: 120px;
-      font-weight: 900;
-      color: #facc15;
+      top: max(12px, env(safe-area-inset-top, 12px));
+      right: 14px;
+      background: rgba(23, 23, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      z-index: 60;
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. ETAPA DE CONFIGURAÇÃO / CONFIRMAÇÃO -->
+  <!-- CONFIG SCREEN -->
   <div id="setup-screen">
     <div class="header-box">
       <span class="badge">Teleprompter Gratuito & Offline</span>
       <h1>Teleprompter Pessoal</h1>
-      <p class="subtitle">Cole seu texto, ajuste as opções e confirme para iniciar a leitura suave</p>
+      <p class="subtitle">Cole seu texto, ajuste as opções e confirme para iniciar a leitura</p>
     </div>
 
     <div class="editor-card">
-      <label for="script-input" style="display:block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #d4d4d4;">Roteiro de Leitura</label>
+      <div class="textarea-label-row">
+        <label for="script-input">Roteiro de Leitura</label>
+        <button id="btn-sample" class="sample-btn" type="button">Carregar Exemplo</button>
+      </div>
+
       <textarea id="script-input" placeholder="Digite ou cole aqui o seu roteiro..."></textarea>
       
       <div class="meta-bar">
@@ -426,79 +467,62 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       </div>
 
       <div class="btn-row">
-        <button id="btn-sample" class="btn-secondary" type="button">📄 Carregar Texto Exemplo</button>
-        <button id="btn-clear" class="btn-secondary" type="button">🗑️ Limpar</button>
+        <button id="btn-clear" class="btn-secondary" type="button">Limpar</button>
         <button id="btn-confirm" class="btn-primary" type="button">▶ Confirmar e Carregar Texto</button>
       </div>
     </div>
   </div>
 
-  <!-- 2. TELA DE LEITURA DO TELEPROMPTER -->
+  <!-- READING SCREEN -->
   <div id="prompter-screen">
-    <button id="exit-btn" type="button">← Voltar / Editar</button>
+    <button id="exit-btn" type="button">← Voltar</button>
     <button id="toggle-hud-btn" type="button">Controles (H)</button>
+    <div id="tap-hint">Toque na tela para Pausar/Iniciar</div>
 
-    <!-- Linha de Guia / Olhar -->
     <div id="eye-guide">
-      <span class="guide-arrow">▶</span>
-      <span class="guide-arrow">◀</span>
+      <span class="guide-marker">▶</span>
+      <span class="guide-marker">◀</span>
     </div>
 
-    <!-- Conteúdo do Roteiro -->
     <div id="prompter-container">
       <div id="prompter-text"></div>
     </div>
 
-    <!-- HUD de Controles Flutuante -->
     <div id="hud-panel">
-      <!-- Play/Pause -->
-      <button id="hud-play-btn" class="hud-btn-main" type="button">▶ Iniciar (Espaço)</button>
-      
-      <!-- Reiniciar -->
-      <button id="hud-restart-btn" class="hud-btn" type="button" title="Voltar ao início">↺ Reiniciar</button>
+      <button id="hud-play-btn" class="hud-btn-main" type="button">▶ Iniciar</button>
+      <button id="hud-restart-btn" class="hud-btn" type="button">↺ Início</button>
 
-      <!-- Velocidade -->
       <div class="control-group">
         <span class="control-label">Velocidade</span>
         <input type="range" id="speed-slider" min="1" max="10" step="1" value="${speed}">
         <span id="speed-val" class="val-display">${speed}x</span>
       </div>
 
-      <!-- Tamanho da Fonte -->
       <div class="control-group">
-        <span class="control-label">Tamanho</span>
+        <span class="control-label">Fonte</span>
         <input type="range" id="font-slider" min="24" max="96" step="2" value="${fontSize}">
         <span id="font-val" class="val-display">${fontSize}px</span>
       </div>
 
-      <!-- Espelhar Horizontal -->
-      <button id="hud-mirror-btn" class="hud-btn" type="button">⇄ Espelhar (M)</button>
-
-      <!-- Cor do Texto -->
+      <button id="hud-mirror-btn" class="hud-btn" type="button">⇄ Espelho</button>
       <button id="hud-color-btn" class="hud-btn" type="button">🎨 Cor</button>
-
-      <!-- Guia Visual -->
       <button id="hud-guide-btn" class="hud-btn active" type="button">👁 Guia</button>
     </div>
   </div>
 
-  <!-- Countdown Overlay -->
-  <div id="countdown-overlay">3</div>
-
   <script>
-    // Estado da Aplicação
     const state = {
       isPlaying: false,
-      speed: ${speed}, // 1 a 10
+      speed: ${speed},
       fontSize: ${fontSize},
       isMirrored: ${isMirrored},
       textColor: '${color}',
       showGuide: true,
       scrollAccumulator: 0,
-      animationFrameId: null
+      animationFrameId: null,
+      wakeLock: null
     };
 
-    // Elementos DOM
     const setupScreen = document.getElementById('setup-screen');
     const prompterScreen = document.getElementById('prompter-screen');
     const scriptInput = document.getElementById('script-input');
@@ -522,36 +546,42 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
     const fontVal = document.getElementById('font-val');
     const charWordCount = document.getElementById('char-word-count');
     const readingTimeEst = document.getElementById('reading-time-est');
-    const countdownOverlay = document.getElementById('countdown-overlay');
+    const tapHint = document.getElementById('tap-hint');
 
-    // Texto de exemplo inicial
-    const sampleText = \`${initialText.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`;
-    scriptInput.value = sampleText;
+    const defaultScript = \`${safeText}\`;
+    scriptInput.value = defaultScript;
     updateCounts();
 
     function updateCounts() {
       const txt = scriptInput.value.trim();
       const words = txt ? txt.split(/\\s+/).length : 0;
       const chars = txt.length;
-      charWordCount.textContent = \`\${words} palavras · \${chars} caracteres\`;
+      charWordCount.textContent = words + ' palavras · ' + chars + ' caracteres';
       const minutes = (words / 130).toFixed(1);
-      readingTimeEst.textContent = \`Tempo estimado: ~\${minutes} min\`;
+      readingTimeEst.textContent = 'Tempo estimado: ~' + minutes + ' min';
     }
 
     scriptInput.addEventListener('input', updateCounts);
+    btnSample.addEventListener('click', () => { scriptInput.value = defaultScript; updateCounts(); });
+    btnClear.addEventListener('click', () => { scriptInput.value = ''; updateCounts(); scriptInput.focus(); });
 
-    btnSample.addEventListener('click', () => {
-      scriptInput.value = sampleText;
-      updateCounts();
-    });
+    // Request wake lock to prevent mobile screen sleeping
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          state.wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {}
+    }
 
-    btnClear.addEventListener('click', () => {
-      scriptInput.value = '';
-      updateCounts();
-      scriptInput.focus();
-    });
+    function releaseWakeLock() {
+      if (state.wakeLock) {
+        state.wakeLock.release().catch(() => {});
+        state.wakeLock = null;
+      }
+    }
 
-    // 1. CONFIRMAÇÃO: Transição para a tela de leitura
+    // Confirmation
     btnConfirm.addEventListener('click', () => {
       const text = scriptInput.value.trim();
       if (!text) {
@@ -564,62 +594,62 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       prompterScreen.style.display = 'block';
       prompterScreen.scrollTop = 0;
       state.scrollAccumulator = 0;
+      
+      // Auto hide hint after 4s
+      setTimeout(() => {
+        if (tapHint) tapHint.style.opacity = '0';
+      }, 4000);
     });
 
-    // Voltar para a tela de edição
     exitBtn.addEventListener('click', () => {
       pausePrompter();
       prompterScreen.style.display = 'none';
       setupScreen.style.display = 'flex';
     });
 
-    // Alternar exibição do HUD
     toggleHudBtn.addEventListener('click', () => {
       hudPanel.classList.toggle('hidden');
     });
 
-    // 2. CONTROLE PLAY / PAUSE
+    // Tap anywhere on the reading viewport to Play / Pause (Mobile Friendly!)
+    prompterScreen.addEventListener('click', (e) => {
+      if (e.target.closest('#hud-panel, #exit-btn, #toggle-hud-btn')) {
+        return;
+      }
+      togglePlay();
+    });
+
+    // Play / Pause Logic
     function togglePlay() {
       if (state.isPlaying) {
         pausePrompter();
       } else {
-        startPrompterWithCountdown();
+        playPrompter();
       }
     }
 
-    function startPrompterWithCountdown() {
-      countdownOverlay.style.display = 'flex';
-      let count = 3;
-      countdownOverlay.textContent = count;
-      
-      const timer = setInterval(() => {
-        count--;
-        if (count > 0) {
-          countdownOverlay.textContent = count;
-        } else {
-          clearInterval(timer);
-          countdownOverlay.style.display = 'none';
-          playPrompter();
-        }
-      }, 700);
-    }
-
     function playPrompter() {
+      if (state.isPlaying) return;
       state.isPlaying = true;
-      hudPlayBtn.textContent = '⏸ Pausar (Espaço)';
+      requestWakeLock();
+
+      hudPlayBtn.textContent = '⏸ Pausar';
       hudPlayBtn.style.background = '#ef4444';
       hudPlayBtn.style.color = '#ffffff';
 
       let lastTime = performance.now();
-      
-      function scrollStep(currentTime) {
+
+      function scrollLoop(currentTime) {
         if (!state.isPlaying) return;
         const delta = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
 
-        // Velocidade suave em pixels por segundo
-        const pixelsPerSecond = state.speed * 28;
-        state.scrollAccumulator += pixelsPerSecond * delta;
+        // Clamp delta to prevent huge jumps on tab switch / lag spike
+        const safeDelta = Math.min(delta, 0.05);
+
+        // Pixels per second calculation
+        const pxPerSec = state.speed * 26 + 10;
+        state.scrollAccumulator += pxPerSec * safeDelta;
 
         if (state.scrollAccumulator >= 1) {
           const toScroll = Math.floor(state.scrollAccumulator);
@@ -627,51 +657,54 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
           state.scrollAccumulator -= toScroll;
         }
 
-        // Verifica se chegou ao fim
-        if (prompterScreen.scrollTop + prompterScreen.clientHeight >= prompterScreen.scrollHeight - 5) {
+        // Check if reached bottom ONLY if we actually have room to scroll AND scrolled past 50px
+        const maxScroll = prompterScreen.scrollHeight - prompterScreen.clientHeight;
+        if (maxScroll > 60 && prompterScreen.scrollTop >= maxScroll - 6) {
           pausePrompter();
           return;
         }
 
-        state.animationFrameId = requestAnimationFrame(scrollStep);
+        state.animationFrameId = requestAnimationFrame(scrollLoop);
       }
 
-      state.animationFrameId = requestAnimationFrame(scrollStep);
+      state.animationFrameId = requestAnimationFrame(scrollLoop);
     }
 
     function pausePrompter() {
       state.isPlaying = false;
+      releaseWakeLock();
       if (state.animationFrameId) {
         cancelAnimationFrame(state.animationFrameId);
+        state.animationFrameId = null;
       }
-      hudPlayBtn.textContent = '▶ Iniciar (Espaço)';
+      hudPlayBtn.textContent = '▶ Iniciar';
       hudPlayBtn.style.background = '#facc15';
       hudPlayBtn.style.color = '#000000';
     }
 
-    hudPlayBtn.addEventListener('click', togglePlay);
+    hudPlayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlay();
+    });
 
-    // Botão Reiniciar
-    hudRestartBtn.addEventListener('click', () => {
+    hudRestartBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       pausePrompter();
       prompterScreen.scrollTop = 0;
       state.scrollAccumulator = 0;
     });
 
-    // Slider de Velocidade
     speedSlider.addEventListener('input', (e) => {
       state.speed = parseInt(e.target.value, 10);
       speedVal.textContent = state.speed + 'x';
     });
 
-    // Slider de Tamanho da Fonte
     fontSlider.addEventListener('input', (e) => {
       state.fontSize = parseInt(e.target.value, 10);
       fontVal.textContent = state.fontSize + 'px';
       prompterText.style.fontSize = state.fontSize + 'px';
     });
 
-    // 3. RECURSO DE ESPELHAMENTO
     function toggleMirror() {
       state.isMirrored = !state.isMirrored;
       applyMirror();
@@ -687,19 +720,22 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       }
     }
 
-    hudMirrorBtn.addEventListener('click', toggleMirror);
+    hudMirrorBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMirror();
+    });
 
-    // Alternar Cores de Alto Contraste
     const colors = ['#ffffff', '#facc15', '#4ade80', '#38bdf8'];
     let colorIdx = 0;
-    hudColorBtn.addEventListener('click', () => {
+    hudColorBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       colorIdx = (colorIdx + 1) % colors.length;
       state.textColor = colors[colorIdx];
       prompterText.style.color = state.textColor;
     });
 
-    // Alternar Guia Visual
-    hudGuideBtn.addEventListener('click', () => {
+    hudGuideBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       state.showGuide = !state.showGuide;
       eyeGuide.style.display = state.showGuide ? 'flex' : 'none';
       hudGuideBtn.classList.toggle('active', state.showGuide);
@@ -711,7 +747,7 @@ function generateStandaloneHtml(initialText: string, speed: number, fontSize: nu
       applyMirror();
     }
 
-    // Atalhos de Teclado
+    // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
       if (prompterScreen.style.display === 'block') {
         if (e.code === 'Space') {
@@ -775,10 +811,11 @@ export default function App() {
   const [showEyeGuide, setShowEyeGuide] = useState<boolean>(true);
   const [guidePosition, setGuidePosition] = useState<number>(35); // 25% to 50%
   const [isHudVisible, setIsHudVisible] = useState<boolean>(true);
-  const [useCountdown, setUseCountdown] = useState<boolean>(true);
+  const [useCountdown, setUseCountdown] = useState<boolean>(false); // Instant play by default for mobile reliability
   const [countdownValue, setCountdownValue] = useState<number | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [showTapHint, setShowTapHint] = useState<boolean>(true);
   
   // Modals & export
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
@@ -791,11 +828,12 @@ export default function App() {
   const lastTimeRef = useRef<number>(0);
   const scrollRemainderRef = useRef<number>(0);
   const timerIntervalRef = useRef<any>(null);
+  const countdownTimerRef = useRef<any>(null);
+  const wakeLockRef = useRef<any>(null);
 
   // Word & character stats
   const wordCount = scriptText.trim() ? scriptText.trim().split(/\s+/).length : 0;
   const charCount = scriptText.length;
-  // Average speaking pace ~130 words/minute
   const estimatedMinutes = Math.max(0.1, wordCount / 130);
   const estimatedTimeFormatted = `${Math.floor(estimatedMinutes)}m ${Math.round((estimatedMinutes % 1) * 60)}s`;
 
@@ -828,7 +866,25 @@ export default function App() {
     return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  // Smooth scroll loop using requestAnimationFrame
+  // Screen Wake Lock API to prevent device from dimming / sleeping while reading
+  const requestWakeLock = useCallback(async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+      }
+    } catch {
+      // Wake lock can fail in battery saver mode or unsupported browsers
+    }
+  }, []);
+
+  const releaseWakeLock = useCallback(() => {
+    if (wakeLockRef.current) {
+      wakeLockRef.current.release().catch(() => {});
+      wakeLockRef.current = null;
+    }
+  }, []);
+
+  // Ultra-Smooth Scroll Loop using requestAnimationFrame
   const scrollStep = useCallback((currentTime: number) => {
     if (!scrollerRef.current) return;
 
@@ -839,9 +895,12 @@ export default function App() {
     const delta = (currentTime - lastTimeRef.current) / 1000;
     lastTimeRef.current = currentTime;
 
-    // Convert speed (1-10) to px/sec (e.g. 1 -> 25px/s, 5 -> 125px/s, 10 -> 250px/s)
-    const pixelsPerSecond = speed * 26;
-    scrollRemainderRef.current += pixelsPerSecond * delta;
+    // Safety clamp delta to 50ms maximum to prevent massive jumps on lag spikes
+    const safeDelta = Math.min(delta, 0.05);
+
+    // Calculate speed in px/sec (speed 1: ~36px/s, speed 5: ~140px/s, speed 10: ~270px/s)
+    const pixelsPerSecond = speed * 26 + 10;
+    scrollRemainderRef.current += pixelsPerSecond * safeDelta;
 
     if (scrollRemainderRef.current >= 1) {
       const scrollAmount = Math.floor(scrollRemainderRef.current);
@@ -849,9 +908,10 @@ export default function App() {
       scrollRemainderRef.current -= scrollAmount;
     }
 
-    // Check if reached bottom
+    // Check if reached bottom ONLY IF we actually have scrollable content AND scrolled past 50px
     const el = scrollerRef.current;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 4) {
+    const maxScroll = el.scrollHeight - el.clientHeight;
+    if (maxScroll > 60 && el.scrollTop >= maxScroll - 6) {
       setIsPlaying(false);
       return;
     }
@@ -864,6 +924,7 @@ export default function App() {
     if (isPlaying && mode === 'reading') {
       lastTimeRef.current = performance.now();
       animationFrameRef.current = requestAnimationFrame(scrollStep);
+      requestWakeLock();
 
       // Start elapsed timer
       timerIntervalRef.current = setInterval(() => {
@@ -878,6 +939,7 @@ export default function App() {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
+      releaseWakeLock();
     }
 
     return () => {
@@ -887,27 +949,38 @@ export default function App() {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
+      releaseWakeLock();
     };
-  }, [isPlaying, mode, scrollStep]);
+  }, [isPlaying, mode, scrollStep, requestWakeLock, releaseWakeLock]);
 
-  // Toggle play with optional 3-second countdown
+  // Toggle play / pause with instant execution (or optional countdown)
   const handleTogglePlay = useCallback(() => {
+    // If a countdown is in progress, skip it and play immediately!
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = null;
+      setCountdownValue(null);
+      setIsPlaying(true);
+      return;
+    }
+
     if (isPlaying) {
       setIsPlaying(false);
     } else {
       if (useCountdown) {
         setCountdownValue(3);
-        let current = 3;
-        const interval = setInterval(() => {
-          current--;
-          if (current > 0) {
-            setCountdownValue(current);
+        let count = 3;
+        countdownTimerRef.current = setInterval(() => {
+          count--;
+          if (count > 0) {
+            setCountdownValue(count);
           } else {
-            clearInterval(interval);
+            clearInterval(countdownTimerRef.current);
+            countdownTimerRef.current = null;
             setCountdownValue(null);
             setIsPlaying(true);
           }
-        }, 700);
+        }, 600);
       } else {
         setIsPlaying(true);
       }
@@ -916,6 +989,11 @@ export default function App() {
 
   // Reset scroll to top
   const handleRestart = useCallback(() => {
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = null;
+      setCountdownValue(null);
+    }
     setIsPlaying(false);
     setElapsedSeconds(0);
     scrollRemainderRef.current = 0;
@@ -929,7 +1007,6 @@ export default function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing inside textarea or inputs
       if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) {
-        // Allow Ctrl+Enter or Cmd+Enter to confirm and load script
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && mode === 'setup') {
           e.preventDefault();
           handleConfirm();
@@ -995,11 +1072,17 @@ export default function App() {
     setIsPlaying(false);
     setElapsedSeconds(0);
     scrollRemainderRef.current = 0;
+    setShowTapHint(true);
     setTimeout(() => {
       if (scrollerRef.current) {
         scrollerRef.current.scrollTop = 0;
       }
     }, 50);
+
+    // Auto fade hint after 4s
+    setTimeout(() => {
+      setShowTapHint(false);
+    }, 4500);
   };
 
   // Standalone code for export
@@ -1041,19 +1124,19 @@ export default function App() {
   const getMaxWidthClass = () => {
     switch (containerWidth) {
       case 'narrow':
-        return 'max-w-xl'; // ~576px
+        return 'max-w-xl';
       case 'wide':
-        return 'max-w-5xl'; // ~1024px
+        return 'max-w-5xl';
       case 'full':
-        return 'max-w-full px-6';
+        return 'max-w-full px-4';
       case 'medium':
       default:
-        return 'max-w-3xl'; // ~768px - optimal eye tracking
+        return 'max-w-3xl';
     }
   };
 
   return (
-    <div className="min-h-screen bg-black text-neutral-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-black text-neutral-100 flex flex-col font-sans select-none touch-manipulation">
       {/* =========================================================================
           1. ETAPA DE CONFIGURAÇÃO / CONFIRMAÇÃO (Setup View)
          ========================================================================= */}
@@ -1069,11 +1152,11 @@ export default function App() {
                 <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
                   Teleprompter Profissional
                   <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-800 text-amber-400 font-semibold border border-neutral-700">
-                    Gratuito & Offline
+                    Mobile & Tablet Ready
                   </span>
                 </h1>
                 <p className="text-xs text-neutral-400">
-                  Rolagem suave automática, espelhamento para vidro refletor e controle em tempo real
+                  Rolagem suave automática, toque na tela, espelhamento para vidro e offline
                 </p>
               </div>
             </div>
@@ -1086,7 +1169,7 @@ export default function App() {
                 title="Atalhos de teclado"
               >
                 <Keyboard className="w-3.5 h-3.5 text-amber-400" />
-                <span>Atalhos</span>
+                <span className="hidden sm:inline">Atalhos</span>
               </button>
 
               <button
@@ -1096,7 +1179,7 @@ export default function App() {
                 title="Exportar como arquivo HTML único"
               >
                 <Code className="w-3.5 h-3.5 text-amber-400" />
-                <span>Exportar HTML Único</span>
+                <span>Exportar .html</span>
               </button>
 
               <button
@@ -1123,7 +1206,7 @@ export default function App() {
                 {/* Quick Presets */}
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <span className="text-xs text-neutral-500 mr-1 hidden sm:inline">Exemplos:</span>
-                  {PRESET_SCRIPTS.map((preset, index) => (
+                  {PRESET_SCRIPTS.map((preset) => (
                     <button
                       key={preset.title}
                       type="button"
@@ -1151,8 +1234,8 @@ export default function App() {
                   value={scriptText}
                   onChange={(e) => setScriptText(e.target.value)}
                   placeholder="Digite ou cole aqui o roteiro da sua apresentação, discurso ou vídeo..."
-                  rows={13}
-                  className="w-full bg-black border border-neutral-800 focus:border-amber-400/80 rounded-xl p-4 text-base md:text-lg text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-400/50 transition-all font-sans leading-relaxed resize-y min-h-[260px]"
+                  rows={12}
+                  className="w-full bg-black border border-neutral-800 focus:border-amber-400/80 rounded-xl p-4 text-base md:text-lg text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-amber-400/50 transition-all font-sans leading-relaxed resize-y min-h-[240px]"
                 />
               </div>
 
@@ -1170,7 +1253,7 @@ export default function App() {
 
                 <div className="flex items-center gap-2 text-neutral-300">
                   <Clock className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Duração estimada de fala: <strong className="text-amber-400 font-mono">{estimatedTimeFormatted}</strong> (~130 ppm)</span>
+                  <span>Duração estimada: <strong className="text-amber-400 font-mono">{estimatedTimeFormatted}</strong></span>
                 </div>
               </div>
 
@@ -1180,7 +1263,7 @@ export default function App() {
                 <div className="flex flex-col gap-1.5 bg-neutral-900/70 p-3 rounded-xl border border-neutral-800/60">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-neutral-400 flex items-center gap-1.5">
-                      <Gauge className="w-3.5 h-3.5 text-amber-400" /> Velocidade Inicial
+                      <Gauge className="w-3.5 h-3.5 text-amber-400" /> Velocidade
                     </span>
                     <span className="font-mono text-amber-400 font-semibold">{speed}x</span>
                   </div>
@@ -1216,10 +1299,10 @@ export default function App() {
 
                 {/* Text Color Selection */}
                 <div className="flex flex-col gap-1.5 bg-neutral-900/70 p-3 rounded-xl border border-neutral-800/60">
-                  <span className="text-xs text-neutral-400">Cor de Alto Contraste</span>
+                  <span className="text-xs text-neutral-400">Cor do Texto</span>
                   <div className="flex items-center gap-2">
                     {[
-                      { hex: '#FFFFFF', name: 'Branco Puro' },
+                      { hex: '#FFFFFF', name: 'Branco' },
                       { hex: '#FACC15', name: 'Amarelo Estúdio' },
                       { hex: '#4ADE80', name: 'Verde Neon' },
                       { hex: '#38BDF8', name: 'Ciano' }
@@ -1267,9 +1350,9 @@ export default function App() {
                       type="checkbox"
                       checked={useCountdown}
                       onChange={(e) => setUseCountdown(e.target.checked)}
-                      className="accent-amber-400 rounded w-4 h-4"
+                      className="accent-amber-400 rounded w-4 h-4 cursor-pointer"
                     />
-                    <span>Contagem regressiva de 3s ao iniciar</span>
+                    <span>Contagem 3s ao iniciar</span>
                   </label>
 
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1277,9 +1360,9 @@ export default function App() {
                       type="checkbox"
                       checked={isUppercase}
                       onChange={(e) => setIsUppercase(e.target.checked)}
-                      className="accent-amber-400 rounded w-4 h-4"
+                      className="accent-amber-400 rounded w-4 h-4 cursor-pointer"
                     />
-                    <span>Converter para MAIÚSCULAS</span>
+                    <span>Texto em MAIÚSCULAS</span>
                   </label>
                 </div>
 
@@ -1287,7 +1370,7 @@ export default function App() {
                   type="button"
                   onClick={handleConfirm}
                   disabled={!scriptText.trim()}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-base shadow-lg shadow-amber-400/25 transition-all transform active:scale-98 disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2.5"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-black font-bold text-base shadow-lg shadow-amber-400/25 transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2.5 cursor-pointer"
                 >
                   <Play className="w-5 h-5 fill-current" />
                   <span>Confirmar / Carregar Texto</span>
@@ -1296,30 +1379,13 @@ export default function App() {
               </div>
             </div>
 
-            {/* Feature Highlights Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-neutral-400 text-xs">
-              <div className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 flex gap-3">
-                <FlipHorizontal className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <h2 className="font-semibold text-neutral-200 text-sm mb-1">Pronto para Espelho Refletor</h2>
-                  <p>Inversão horizontal em tempo real com tecla de atalho 'M'. Perfeito para pedestais, tablets e kits de teleprompter para câmeras DSLR/Mirrorless.</p>
-                </div>
-              </div>
-
-              <div className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 flex gap-3">
-                <Gauge className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <h2 className="font-semibold text-neutral-200 text-sm mb-1">Rolagem Fluida 60 FPS</h2>
-                  <p>Rolagem sub-pixel calculada por tempo real, garantindo leitura suave sem saltos ou engasgos na tela.</p>
-                </div>
-              </div>
-
-              <div className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 flex gap-3">
-                <Download className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <h2 className="font-semibold text-neutral-200 text-sm mb-1">Totalmente Gratuito & 100% Offline</h2>
-                  <p>Exportável em um arquivo HTML único e autossuficiente para você salvar no seu pen drive e abrir em qualquer navegador sem internet.</p>
-                </div>
+            {/* Mobile / Tablet Guide Banner */}
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-4 flex items-center justify-between text-xs text-neutral-400">
+              <div className="flex items-center gap-3">
+                <Smartphone className="w-5 h-5 text-amber-400 shrink-0" />
+                <span>
+                  <strong className="text-white">Dica Mobile & Tablet:</strong> Na tela de leitura, basta <strong>tocar em qualquer lugar da tela</strong> para dar Play ou Pause instantaneamente.
+                </span>
               </div>
             </div>
           </main>
@@ -1330,10 +1396,10 @@ export default function App() {
           2. TELA DE LEITURA DO TELEPROMPTER (Reading View)
          ========================================================================= */}
       {mode === 'reading' && (
-        <div className="fixed inset-0 bg-black text-white overflow-hidden select-none">
+        <div className="fixed inset-0 bg-black text-white overflow-hidden select-none touch-manipulation">
           {/* Top Quick Status & Back Button */}
           <div
-            className={`fixed top-0 left-0 right-0 z-40 p-4 flex items-center justify-between pointer-events-none transition-opacity duration-300 ${
+            className={`fixed top-0 left-0 right-0 z-40 p-3 md:p-4 flex items-center justify-between pointer-events-none transition-opacity duration-300 ${
               isHudVisible ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -1344,15 +1410,15 @@ export default function App() {
                 setIsPlaying(false);
                 setMode('setup');
               }}
-              className="pointer-events-auto px-4 py-2 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 text-neutral-200 hover:text-white border border-neutral-700/80 backdrop-blur-md shadow-lg flex items-center gap-2 text-sm font-medium transition-all"
+              className="pointer-events-auto px-3.5 py-2 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-neutral-200 hover:text-white border border-neutral-700/80 backdrop-blur-md shadow-lg flex items-center gap-1.5 text-xs md:text-sm font-medium transition-all"
               title="Voltar para tela de edição (Esc)"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Voltar / Editar</span>
+              <span>Voltar</span>
             </button>
 
             {/* Reading Timer & Speed Indicator */}
-            <div className="pointer-events-auto flex items-center gap-2 bg-neutral-900/90 border border-neutral-800/80 px-4 py-1.5 rounded-full backdrop-blur-md text-xs font-mono text-neutral-300 shadow-lg">
+            <div className="pointer-events-auto flex items-center gap-2 bg-neutral-900/90 border border-neutral-800/80 px-3 md:px-4 py-1.5 rounded-full backdrop-blur-md text-xs font-mono text-neutral-300 shadow-lg">
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-amber-400" />
                 <span className="tabular-nums font-bold text-white">{formatTime(elapsedSeconds)}</span>
@@ -1368,7 +1434,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setIsHudVisible((prev) => !prev)}
-                className="p-2.5 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-800 backdrop-blur-md transition-colors"
+                className="p-2 md:p-2.5 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-neutral-300 hover:text-white border border-neutral-800 backdrop-blur-md transition-colors"
                 title="Ocultar / Exibir Controles (H)"
               >
                 {isHudVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -1377,7 +1443,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={toggleFullscreen}
-                className="p-2.5 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-800 backdrop-blur-md transition-colors"
+                className="p-2 md:p-2.5 rounded-xl bg-neutral-900/90 hover:bg-neutral-800 active:scale-95 text-neutral-300 hover:text-white border border-neutral-800 backdrop-blur-md transition-colors"
                 title="Tela Cheia (F)"
               >
                 {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
@@ -1388,41 +1454,68 @@ export default function App() {
           {/* Reading Eye Guide Marker / Line Ruler */}
           {showEyeGuide && (
             <div
-              className="fixed left-0 right-0 pointer-events-none z-20 flex items-center justify-between px-6 transition-all duration-200"
+              className="fixed left-0 right-0 pointer-events-none z-20 flex items-center justify-between px-4 md:px-6 transition-all duration-200"
               style={{ top: `${guidePosition}%`, transform: 'translateY(-50%)' }}
             >
-              <div className="flex items-center gap-2 text-amber-400/90">
-                <div className="w-3 h-3 border-t-2 border-r-2 border-amber-400 rotate-45" />
+              <div className="flex items-center gap-1.5 text-amber-400/90">
+                <div className="w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 rotate-45" />
                 <span className="text-[10px] font-mono tracking-widest uppercase opacity-75 hidden sm:inline">OLHAR</span>
               </div>
-              <div className="flex-1 h-[2px] mx-4 bg-gradient-to-r from-amber-400/50 via-amber-400/20 to-amber-400/50" />
-              <div className="flex items-center gap-2 text-amber-400/90">
+              <div className="flex-1 h-[2px] mx-3 bg-gradient-to-r from-amber-400/50 via-amber-400/20 to-amber-400/50" />
+              <div className="flex items-center gap-1.5 text-amber-400/90">
                 <span className="text-[10px] font-mono tracking-widest uppercase opacity-75 hidden sm:inline">OLHAR</span>
-                <div className="w-3 h-3 border-b-2 border-l-2 border-amber-400 rotate-45" />
+                <div className="w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 rotate-45" />
               </div>
             </div>
           )}
 
-          {/* 3-Second Countdown Overlay */}
+          {/* Mobile Tap Hint */}
+          {showTapHint && (
+            <div className="fixed top-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none bg-neutral-900/80 backdrop-blur-md px-3 py-1.5 rounded-full text-xs text-neutral-300 border border-neutral-800 shadow-lg animate-pulse">
+              Toque na tela para Iniciar / Pausar
+            </div>
+          )}
+
+          {/* 3-Second Countdown Overlay (tap to skip!) */}
           {countdownValue !== null && (
-            <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center pointer-events-none">
+            <div
+              onClick={() => {
+                if (countdownTimerRef.current) {
+                  clearInterval(countdownTimerRef.current);
+                  countdownTimerRef.current = null;
+                }
+                setCountdownValue(null);
+                setIsPlaying(true);
+              }}
+              className="fixed inset-0 z-50 bg-black/85 flex flex-col items-center justify-center cursor-pointer"
+            >
               <div className="text-8xl md:text-9xl font-black text-amber-400 animate-ping">
                 {countdownValue}
               </div>
+              <span className="text-xs text-neutral-400 mt-6 bg-neutral-900 px-3 py-1 rounded-full border border-neutral-800">
+                Toque para iniciar imediatamente
+              </span>
             </div>
           )}
 
-          {/* Main Scrollable Viewport */}
+          {/* Main Scrollable Viewport (Click/Tap on reading area toggles Play/Pause) */}
           <div
             ref={scrollerRef}
-            className="w-full h-full overflow-y-auto no-scrollbar scroll-smooth"
+            onClick={(e) => {
+              // Ignore clicks if clicking directly inside HUD or top bar
+              if ((e.target as HTMLElement).closest('#reading-hud-panel, button, input')) {
+                return;
+              }
+              handleTogglePlay();
+            }}
+            className="prompter-viewport w-full h-full overflow-y-auto no-scrollbar cursor-pointer"
             style={{
               paddingTop: `${guidePosition}vh`,
-              paddingBottom: '60vh',
+              paddingBottom: '100vh',
             }}
           >
             <div
-              className={`mx-auto px-4 md:px-8 text-center transition-transform duration-200 ${getMaxWidthClass()} ${getFontFamilyStyle()}`}
+              className={`mx-auto px-4 md:px-8 text-center transition-transform duration-200 min-h-[140vh] ${getMaxWidthClass()} ${getFontFamilyStyle()}`}
               style={{
                 transform: `${isMirroredX ? 'scaleX(-1)' : ''} ${isMirroredY ? 'scaleY(-1)' : ''}`.trim() || undefined,
               }}
@@ -1443,59 +1536,69 @@ export default function App() {
 
           {/* Discreet Floating HUD Controls Bar (Bottom) */}
           <div
-            className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-40 transition-all duration-300 max-w-[96vw] ${
+            id="reading-hud-panel"
+            className={`fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-40 transition-all duration-300 max-w-[96vw] ${
               isHudVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16 pointer-events-none'
             }`}
           >
-            <div className="bg-neutral-900/95 border border-neutral-700/80 rounded-2xl md:rounded-full px-4 py-3 shadow-2xl backdrop-blur-xl flex flex-wrap items-center justify-center gap-3 text-sm text-neutral-200">
+            <div className="bg-neutral-900/95 border border-neutral-700/80 rounded-2xl md:rounded-full px-3 md:px-4 py-2.5 shadow-2xl backdrop-blur-xl flex flex-wrap items-center justify-center gap-2 md:gap-3 text-xs md:text-sm text-neutral-200">
               {/* PLAY / PAUSE BUTTON */}
               <button
                 type="button"
-                onClick={handleTogglePlay}
-                className={`px-5 py-2.5 rounded-full font-bold flex items-center gap-2 shadow-md transition-all active:scale-95 ${
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleTogglePlay();
+                }}
+                className={`px-4 md:px-5 py-2.5 rounded-full font-bold flex items-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer min-h-[42px] ${
                   isPlaying
                     ? 'bg-red-500 hover:bg-red-600 text-white'
                     : 'bg-amber-400 hover:bg-amber-300 text-black'
                 }`}
-                title="Play / Pause (Barra de Espaço)"
+                title="Play / Pause (Barra de Espaço ou Toque)"
               >
                 {isPlaying ? (
                   <>
-                    <Pause className="w-5 h-5 fill-current" />
+                    <Pause className="w-4 h-4 md:w-5 md:h-5 fill-current" />
                     <span>Pausar</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-5 h-5 fill-current" />
+                    <Play className="w-4 h-4 md:w-5 md:h-5 fill-current" />
                     <span>Iniciar</span>
                   </>
                 )}
-                <span className="text-xs font-normal opacity-80">(Espaço)</span>
+                <span className="text-[11px] font-normal opacity-80 hidden md:inline">(Espaço)</span>
               </button>
 
               {/* REINICIAR (Reset) BUTTON */}
               <button
                 type="button"
-                onClick={handleRestart}
-                className="px-3.5 py-2 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border border-neutral-700 flex items-center gap-1.5 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRestart();
+                }}
+                className="px-3 py-2 rounded-full bg-neutral-800 hover:bg-neutral-700 active:scale-95 text-neutral-200 border border-neutral-700 flex items-center gap-1.5 transition-colors cursor-pointer min-h-[42px]"
                 title="Retornar ao início do roteiro (R / Home)"
               >
                 <RotateCcw className="w-4 h-4" />
                 <span className="hidden sm:inline">Reiniciar</span>
               </button>
 
-              <div className="h-6 w-[1px] bg-neutral-700 mx-1 hidden sm:block" />
+              <div className="h-5 w-[1px] bg-neutral-700 mx-0.5 hidden sm:block" />
 
               {/* VELOCIDADE (Speed Control) */}
-              <div className="flex items-center gap-2 bg-neutral-800/80 border border-neutral-700/60 px-3 py-1.5 rounded-full">
-                <span className="text-xs text-neutral-400 flex items-center gap-1 font-medium">
+              <div className="flex items-center gap-1.5 bg-neutral-800/80 border border-neutral-700/60 px-2.5 py-1.5 rounded-full min-h-[42px]">
+                <span className="text-[11px] text-neutral-400 flex items-center gap-1 font-medium">
                   <Gauge className="w-3.5 h-3.5 text-amber-400" />
                   <span className="hidden md:inline">Velocidade:</span>
                 </span>
                 <button
                   type="button"
-                  onClick={() => setSpeed((prev) => Math.max(1, prev - 1))}
-                  className="w-5 h-5 rounded bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center font-bold text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSpeed((prev) => Math.max(1, prev - 1));
+                  }}
+                  className="w-6 h-6 rounded-full bg-neutral-700 hover:bg-neutral-600 active:scale-90 flex items-center justify-center font-bold text-xs"
                 >
                   -
                 </button>
@@ -1506,29 +1609,35 @@ export default function App() {
                   step={1}
                   value={speed}
                   onChange={(e) => setSpeed(Number(e.target.value))}
-                  className="w-16 md:w-20 accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
+                  className="w-14 md:w-20 accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
                   title="Ajuste a velocidade de rolagem"
                 />
                 <button
                   type="button"
-                  onClick={() => setSpeed((prev) => Math.min(10, prev + 1))}
-                  className="w-5 h-5 rounded bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center font-bold text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSpeed((prev) => Math.min(10, prev + 1));
+                  }}
+                  className="w-6 h-6 rounded-full bg-neutral-700 hover:bg-neutral-600 active:scale-90 flex items-center justify-center font-bold text-xs"
                 >
                   +
                 </button>
-                <span className="font-mono text-amber-400 font-bold text-xs w-6 text-center">{speed}x</span>
+                <span className="font-mono text-amber-400 font-bold text-xs w-5 text-center">{speed}x</span>
               </div>
 
               {/* TAMANHO DA FONTE (Font Size Control) */}
-              <div className="flex items-center gap-2 bg-neutral-800/80 border border-neutral-700/60 px-3 py-1.5 rounded-full">
-                <span className="text-xs text-neutral-400 flex items-center gap-1 font-medium">
+              <div className="flex items-center gap-1.5 bg-neutral-800/80 border border-neutral-700/60 px-2.5 py-1.5 rounded-full min-h-[42px]">
+                <span className="text-[11px] text-neutral-400 flex items-center gap-1 font-medium">
                   <Type className="w-3.5 h-3.5 text-amber-400" />
                   <span className="hidden md:inline">Fonte:</span>
                 </span>
                 <button
                   type="button"
-                  onClick={() => setFontSize((prev) => Math.max(20, prev - 2))}
-                  className="w-5 h-5 rounded bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center font-bold text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFontSize((prev) => Math.max(20, prev - 2));
+                  }}
+                  className="w-6 h-6 rounded-full bg-neutral-700 hover:bg-neutral-600 active:scale-90 flex items-center justify-center font-bold text-xs"
                 >
                   -
                 </button>
@@ -1539,26 +1648,32 @@ export default function App() {
                   step={2}
                   value={fontSize}
                   onChange={(e) => setFontSize(Number(e.target.value))}
-                  className="w-16 md:w-20 accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
+                  className="w-14 md:w-20 accent-amber-400 h-1.5 bg-neutral-700 rounded-lg cursor-pointer"
                   title="Ajuste o tamanho do texto"
                 />
                 <button
                   type="button"
-                  onClick={() => setFontSize((prev) => Math.min(96, prev + 2))}
-                  className="w-5 h-5 rounded bg-neutral-700 hover:bg-neutral-600 flex items-center justify-center font-bold text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFontSize((prev) => Math.min(96, prev + 2));
+                  }}
+                  className="w-6 h-6 rounded-full bg-neutral-700 hover:bg-neutral-600 active:scale-90 flex items-center justify-center font-bold text-xs"
                 >
                   +
                 </button>
-                <span className="font-mono text-amber-400 font-bold text-xs w-8 text-center">{fontSize}</span>
+                <span className="font-mono text-amber-400 font-bold text-xs w-7 text-center">{fontSize}</span>
               </div>
 
-              <div className="h-6 w-[1px] bg-neutral-700 mx-1 hidden sm:block" />
+              <div className="h-5 w-[1px] bg-neutral-700 mx-0.5 hidden sm:block" />
 
               {/* ESPELHAMENTO HORIZONTAL (Mirror X) */}
               <button
                 type="button"
-                onClick={() => setIsMirroredX(!isMirroredX)}
-                className={`px-3 py-2 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-colors ${
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMirroredX(!isMirroredX);
+                }}
+                className={`px-3 py-2 rounded-full border text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer min-h-[42px] ${
                   isMirroredX
                     ? 'bg-amber-400 text-black border-amber-400 font-bold'
                     : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-200 border-neutral-700'
@@ -1566,11 +1681,11 @@ export default function App() {
                 title="Espelhar texto horizontalmente para vidro refletor (M)"
               >
                 <FlipHorizontal className="w-4 h-4" />
-                <span className="hidden sm:inline">Espelhar (M)</span>
+                <span className="hidden sm:inline">Espelho (M)</span>
               </button>
 
-              {/* COR DO TEXTO (Color Toggle) */}
-              <div className="flex items-center gap-1">
+              {/* COR DO TEXTO */}
+              <div className="flex items-center gap-1 px-1">
                 {[
                   { hex: '#FFFFFF', title: 'Branco' },
                   { hex: '#FACC15', title: 'Amarelo' },
@@ -1579,9 +1694,12 @@ export default function App() {
                   <button
                     key={c.hex}
                     type="button"
-                    onClick={() => setTextColor(c.hex)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTextColor(c.hex);
+                    }}
                     title={c.title}
-                    className={`w-6 h-6 rounded-full border-2 transition-transform ${
+                    className={`w-5 h-5 rounded-full border-2 transition-transform cursor-pointer ${
                       textColor === c.hex ? 'border-white scale-110' : 'border-neutral-700 opacity-60'
                     }`}
                     style={{ backgroundColor: c.hex }}
@@ -1592,8 +1710,11 @@ export default function App() {
               {/* GUIA DE LEITURA (Eye Guide) */}
               <button
                 type="button"
-                onClick={() => setShowEyeGuide(!showEyeGuide)}
-                className={`p-2 rounded-full border transition-colors ${
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowEyeGuide(!showEyeGuide);
+                }}
+                className={`p-2 rounded-full border transition-colors cursor-pointer min-h-[40px] min-w-[40px] flex items-center justify-center ${
                   showEyeGuide
                     ? 'bg-amber-400/20 text-amber-300 border-amber-400/50'
                     : 'bg-neutral-800 text-neutral-400 border-neutral-700'
@@ -1630,7 +1751,7 @@ export default function App() {
             <div className="divide-y divide-neutral-800 text-sm mt-4">
               <div className="py-2.5 flex justify-between items-center">
                 <span className="text-neutral-300">Play / Pause</span>
-                <kbd className="px-2 py-1 rounded bg-neutral-800 border border-neutral-700 font-mono text-xs text-amber-300">Espaço</kbd>
+                <kbd className="px-2 py-1 rounded bg-neutral-800 border border-neutral-700 font-mono text-xs text-amber-300">Espaço ou Toque</kbd>
               </div>
               <div className="py-2.5 flex justify-between items-center">
                 <span className="text-neutral-300">Espelhar Texto (Vidro)</span>
@@ -1647,10 +1768,6 @@ export default function App() {
               <div className="py-2.5 flex justify-between items-center">
                 <span className="text-neutral-300">Diminuir Velocidade</span>
                 <kbd className="px-2 py-1 rounded bg-neutral-800 border border-neutral-700 font-mono text-xs text-amber-300">Seta Baixo (↓)</kbd>
-              </div>
-              <div className="py-2.5 flex justify-between items-center">
-                <span className="text-neutral-300">Avançar / Voltar Manualmente</span>
-                <kbd className="px-2 py-1 rounded bg-neutral-800 border border-neutral-700 font-mono text-xs text-amber-300">← / →</kbd>
               </div>
               <div className="py-2.5 flex justify-between items-center">
                 <span className="text-neutral-300">Ocultar / Mostrar Controles</span>
@@ -1692,7 +1809,7 @@ export default function App() {
                   Teleprompter em Arquivo HTML Único
                 </h3>
                 <p className="text-xs text-neutral-400 mt-0.5">
-                  100% autossuficiente (HTML + CSS + JS embutidos), pronto para rodar offline em qualquer navegador.
+                  100% autossuficiente (HTML + CSS + JS embutidos), pronto para rodar offline no desktop, celular ou iPad.
                 </p>
               </div>
               <button
@@ -1711,7 +1828,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleCopyStandalone}
-                    className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     {copiedCode ? (
                       <>
@@ -1729,7 +1846,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleDownloadStandalone}
-                    className="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold flex items-center gap-1.5 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-black text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Baixar .html</span>
@@ -1743,11 +1860,11 @@ export default function App() {
             </div>
 
             <div className="pt-3 border-t border-neutral-800 flex justify-between items-center text-xs text-neutral-500">
-              <span>Arquivo: teleprompter.html (~14 KB)</span>
+              <span>Arquivo: teleprompter.html (~13 KB)</span>
               <button
                 type="button"
                 onClick={() => setShowExportModal(false)}
-                className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors"
+                className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-medium transition-colors cursor-pointer"
               >
                 Fechar
               </button>

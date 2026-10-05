@@ -2,38 +2,39 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Teleprompter Pessoal e Gratuito</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
-    body {
+    body, html {
       background-color: #000000;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow-x: hidden;
-      min-height: 100vh;
+      height: 100%;
+      touch-action: manipulation;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
     
-    /* 1. Tela de Configuração */
+    /* Config Screen */
     #setup-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 24px;
-      max-width: 920px;
+      padding: 20px;
+      max-width: 900px;
       margin: 0 auto;
     }
     .header-box {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       width: 100%;
     }
     .badge {
@@ -50,14 +51,14 @@
       border: 1px solid #292524;
     }
     h1 {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #ffffff;
     }
     p.subtitle {
-      font-size: 14px;
+      font-size: 13px;
       color: #a3a3a3;
     }
     .editor-card {
@@ -65,14 +66,14 @@
       background: #0d0d0d;
       border: 1px solid #262626;
       border-radius: 16px;
-      padding: 24px;
+      padding: 20px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.8);
     }
     .textarea-label-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     label {
       font-size: 13px;
@@ -94,12 +95,12 @@
     }
     textarea {
       width: 100%;
-      height: 320px;
+      height: 280px;
       background: #000000;
       color: #f5f5f5;
       border: 1px solid #333333;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       font-size: 16px;
       line-height: 1.6;
       resize: vertical;
@@ -113,39 +114,16 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 12px;
-      padding-top: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
       border-top: 1px solid #1c1c1c;
-      font-size: 13px;
+      font-size: 12px;
       color: #737373;
-    }
-    .options-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #262626;
-    }
-    .opt-box {
-      background: #141414;
-      border: 1px solid #262626;
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .opt-label {
-      font-size: 11px;
-      color: #a3a3a3;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
     .btn-row {
       display: flex;
-      gap: 12px;
-      margin-top: 24px;
+      gap: 10px;
+      margin-top: 20px;
       flex-wrap: wrap;
     }
     button {
@@ -158,36 +136,34 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      user-select: none;
+      touch-action: manipulation;
     }
     .btn-primary {
       background: #facc15;
       color: #000000;
       border: none;
-      padding: 16px 32px;
+      padding: 16px 28px;
       font-size: 16px;
       font-weight: 700;
       flex: 2;
-      min-width: 240px;
+      min-width: 200px;
       box-shadow: 0 4px 20px rgba(250, 204, 21, 0.3);
     }
-    .btn-primary:hover {
+    .btn-primary:active {
+      transform: scale(0.98);
       background: #eab308;
-      transform: translateY(-1px);
     }
     .btn-secondary {
       background: #171717;
       color: #e5e5e5;
       border: 1px solid #262626;
-      padding: 14px 20px;
+      padding: 14px 18px;
       font-size: 14px;
       flex: 1;
     }
-    .btn-secondary:hover {
-      background: #262626;
-      color: #ffffff;
-    }
 
-    /* 2. Tela de Leitura */
+    /* Reading Screen */
     #prompter-screen {
       display: none;
       position: fixed;
@@ -195,7 +171,11 @@
       background: #000000;
       overflow-y: scroll;
       overflow-x: hidden;
-      scroll-behavior: auto;
+      scroll-behavior: auto !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+      z-index: 10;
     }
     #prompter-screen::-webkit-scrollbar {
       display: none;
@@ -205,14 +185,15 @@
       scrollbar-width: none;
     }
 
-    /* Conteúdo do Texto */
+    /* Reading Content */
     #prompter-container {
-      max-width: 840px;
+      max-width: 820px;
       margin: 0 auto;
-      padding: 38vh 24px 60vh 24px;
+      padding: 35vh 20px 100vh 20px;
+      min-height: 150vh;
+      text-align: center;
       transition: transform 0.2s ease;
       will-change: transform;
-      text-align: center;
     }
     #prompter-text {
       white-space: pre-wrap;
@@ -220,54 +201,72 @@
       line-height: 1.6;
       font-weight: 700;
       color: #ffffff;
+      font-size: 44px;
     }
 
-    /* Espelhamento Horizontal */
+    /* Mirroring */
     .mirror-x {
       transform: scaleX(-1);
     }
 
-    /* Linha Guia de Olhar */
+    /* Eye Line Guide */
     #eye-guide {
       position: fixed;
-      top: 36%;
+      top: 35%;
       left: 0;
       right: 0;
-      height: 48px;
+      height: 44px;
       pointer-events: none;
       border-top: 2px dashed rgba(250, 204, 21, 0.4);
       border-bottom: 2px dashed rgba(250, 204, 21, 0.4);
       background: rgba(250, 204, 21, 0.05);
-      z-index: 40;
+      z-index: 30;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px;
+      padding: 0 16px;
     }
     .guide-marker {
       color: #facc15;
       font-size: 18px;
       font-weight: 900;
-      opacity: 0.85;
+      opacity: 0.8;
     }
 
-    /* Painel de Controles HUD Flutuante */
-    #hud-panel {
+    /* Mobile Quick Tap Hint */
+    #tap-hint {
       position: fixed;
-      bottom: 24px;
+      top: 60px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(18, 18, 18, 0.94);
+      background: rgba(23, 23, 23, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      color: #a3a3a3;
+      pointer-events: none;
+      z-index: 40;
+      transition: opacity 0.5s ease;
+    }
+
+    /* HUD Bar */
+    #hud-panel {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 20, 20, 0.95);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 9999px;
-      padding: 8px 16px;
+      padding: 6px 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       z-index: 50;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
-      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.9);
+      transition: opacity 0.2s ease, transform 0.2s ease;
       max-width: 95vw;
       overflow-x: auto;
     }
@@ -281,13 +280,14 @@
       background: #262626;
       color: #ffffff;
       border: 1px solid #404040;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 9999px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
+      min-height: 40px;
     }
-    .hud-btn:hover {
+    .hud-btn:active {
       background: #333333;
     }
     .hud-btn.active {
@@ -299,22 +299,23 @@
       background: #facc15;
       color: #000000;
       border: none;
-      padding: 10px 22px;
+      padding: 10px 20px;
       border-radius: 9999px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
+      min-height: 42px;
       box-shadow: 0 2px 10px rgba(250, 204, 21, 0.3);
     }
-    .hud-btn-main:hover {
-      background: #eab308;
+    .hud-btn-main:active {
+      transform: scale(0.96);
     }
 
     .control-group {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 8px;
-      border-left: 1px solid #333333;
+      gap: 6px;
+      padding: 0 6px;
+      border-left: 1px solid #333;
     }
     .control-label {
       font-size: 11px;
@@ -330,38 +331,20 @@
       border-radius: 3px;
       background: #333;
       outline: none;
+      width: 70px;
     }
     .val-display {
-      font-size: 12px;
+      font-size: 11px;
       font-variant-numeric: tabular-nums;
       color: #facc15;
       font-weight: 700;
-      min-width: 32px;
+      min-width: 26px;
     }
 
-    /* Top Utility Buttons */
     #exit-btn {
       position: fixed;
-      top: 16px;
-      left: 16px;
-      background: rgba(23, 23, 23, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      z-index: 60;
-      backdrop-filter: blur(8px);
-    }
-    #exit-btn:hover {
-      background: #dc2626;
-      border-color: #ef4444;
-    }
-
-    #toggle-hud-btn {
-      position: fixed;
-      top: 16px;
-      right: 16px;
+      top: max(12px, env(safe-area-inset-top, 12px));
+      left: 14px;
       background: rgba(23, 23, 23, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
@@ -371,39 +354,36 @@
       z-index: 60;
       backdrop-filter: blur(8px);
     }
-    #toggle-hud-btn:hover {
-      background: rgba(38, 38, 38, 1);
-    }
 
-    /* Overlay Contagem */
-    #countdown-overlay {
+    #toggle-hud-btn {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 70;
-      font-size: 130px;
-      font-weight: 900;
-      color: #facc15;
+      top: max(12px, env(safe-area-inset-top, 12px));
+      right: 14px;
+      background: rgba(23, 23, 23, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      z-index: 60;
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. ETAPA DE CONFIGURAÇÃO / CONFIRMAÇÃO -->
+  <!-- CONFIG SCREEN -->
   <div id="setup-screen">
     <div class="header-box">
       <span class="badge">Teleprompter Gratuito & Offline</span>
       <h1>Teleprompter Pessoal</h1>
-      <p class="subtitle">Cole seu texto, ajuste as opções e confirme para iniciar a leitura suave</p>
+      <p class="subtitle">Cole seu texto, ajuste as opções e confirme para iniciar a leitura</p>
     </div>
 
     <div class="editor-card">
       <div class="textarea-label-row">
         <label for="script-input">Roteiro de Leitura</label>
-        <button id="btn-sample" class="sample-btn" type="button">Carregar Roteiro Exemplo</button>
+        <button id="btn-sample" class="sample-btn" type="button">Carregar Exemplo</button>
       </div>
 
       <textarea id="script-input" placeholder="Digite ou cole aqui o seu roteiro..."></textarea>
@@ -413,98 +393,63 @@
         <span id="reading-time-est">Tempo estimado: ~0 min</span>
       </div>
 
-      <div class="options-row">
-        <div class="opt-box">
-          <span class="opt-label">Velocidade Padrão</span>
-          <span id="opt-speed-val" style="font-weight: 700; color: #facc15;">3x</span>
-        </div>
-        <div class="opt-box">
-          <span class="opt-label">Tamanho da Fonte</span>
-          <span id="opt-font-val" style="font-weight: 700; color: #facc15;">44px</span>
-        </div>
-        <div class="opt-box">
-          <span class="opt-label">Espelhamento (Vidro)</span>
-          <span id="opt-mirror-val" style="font-weight: 700; color: #a3a3a3;">Desligado</span>
-        </div>
-        <div class="opt-box">
-          <span class="opt-label">Atalhos</span>
-          <span style="font-size: 12px; color: #d4d4d4;">Espaço = Play/Pause</span>
-        </div>
-      </div>
-
       <div class="btn-row">
-        <button id="btn-clear" class="btn-secondary" type="button">🗑️ Limpar</button>
+        <button id="btn-clear" class="btn-secondary" type="button">Limpar</button>
         <button id="btn-confirm" class="btn-primary" type="button">▶ Confirmar e Carregar Texto</button>
       </div>
     </div>
   </div>
 
-  <!-- 2. TELA DE LEITURA DO TELEPROMPTER -->
+  <!-- READING SCREEN -->
   <div id="prompter-screen">
-    <button id="exit-btn" type="button">← Voltar / Editar</button>
-    <button id="toggle-hud-btn" type="button">Ocultar Controles (H)</button>
+    <button id="exit-btn" type="button">← Voltar</button>
+    <button id="toggle-hud-btn" type="button">Controles (H)</button>
+    <div id="tap-hint">Toque na tela para Pausar/Iniciar</div>
 
-    <!-- Linha de Guia / Olhar -->
     <div id="eye-guide">
       <span class="guide-marker">▶</span>
       <span class="guide-marker">◀</span>
     </div>
 
-    <!-- Conteúdo do Roteiro -->
     <div id="prompter-container">
       <div id="prompter-text"></div>
     </div>
 
-    <!-- HUD de Controles Flutuante -->
     <div id="hud-panel">
-      <!-- Play/Pause -->
-      <button id="hud-play-btn" class="hud-btn-main" type="button">▶ Iniciar (Espaço)</button>
-      
-      <!-- Reiniciar -->
-      <button id="hud-restart-btn" class="hud-btn" type="button" title="Voltar ao início">↺ Reiniciar</button>
+      <button id="hud-play-btn" class="hud-btn-main" type="button">▶ Iniciar</button>
+      <button id="hud-restart-btn" class="hud-btn" type="button">↺ Início</button>
 
-      <!-- Velocidade -->
       <div class="control-group">
         <span class="control-label">Velocidade</span>
         <input type="range" id="speed-slider" min="1" max="10" step="1" value="3">
         <span id="speed-val" class="val-display">3x</span>
       </div>
 
-      <!-- Tamanho da Fonte -->
       <div class="control-group">
         <span class="control-label">Fonte</span>
         <input type="range" id="font-slider" min="24" max="96" step="2" value="44">
         <span id="font-val" class="val-display">44px</span>
       </div>
 
-      <!-- Espelhar Horizontal -->
-      <button id="hud-mirror-btn" class="hud-btn" type="button">⇄ Espelhar (M)</button>
-
-      <!-- Cor do Texto -->
+      <button id="hud-mirror-btn" class="hud-btn" type="button">⇄ Espelho</button>
       <button id="hud-color-btn" class="hud-btn" type="button">🎨 Cor</button>
-
-      <!-- Guia Visual -->
       <button id="hud-guide-btn" class="hud-btn active" type="button">👁 Guia</button>
     </div>
   </div>
 
-  <!-- Countdown Overlay -->
-  <div id="countdown-overlay">3</div>
-
   <script>
-    // Estado da Aplicação
     const state = {
       isPlaying: false,
-      speed: 3, // 1 a 10
+      speed: 3,
       fontSize: 44,
       isMirrored: false,
       textColor: '#ffffff',
       showGuide: true,
       scrollAccumulator: 0,
-      animationFrameId: null
+      animationFrameId: null,
+      wakeLock: null
     };
 
-    // Elementos DOM
     const setupScreen = document.getElementById('setup-screen');
     const prompterScreen = document.getElementById('prompter-screen');
     const scriptInput = document.getElementById('script-input');
@@ -528,9 +473,8 @@
     const fontVal = document.getElementById('font-val');
     const charWordCount = document.getElementById('char-word-count');
     const readingTimeEst = document.getElementById('reading-time-est');
-    const countdownOverlay = document.getElementById('countdown-overlay');
+    const tapHint = document.getElementById('tap-hint');
 
-    // Texto de exemplo padrão
     const sampleScript = `Olá a todos e sejam muito bem-vindos ao meu vídeo!
 
 Hoje vamos demonstrar o funcionamento de um Teleprompter pessoal, gratuito e profissional.
@@ -541,9 +485,9 @@ Recursos incluídos:
 - Rolagem suave e contínua sem engasgos
 - Controle dinâmico de velocidade e tamanho de fonte
 - Espelhamento horizontal para uso em vidro refletor de teleprompter
-- Atalhos rápidos no teclado para máxima produtividade
+- Atalhos rápidos no teclado e toque na tela para Play/Pause
 
-Pressione Espaço para pausar ou continuar a qualquer momento!
+Toque na tela ou pressione Espaço para pausar ou continuar a qualquer momento!
 
 Obrigado por assistir e boas gravações!`;
 
@@ -554,29 +498,36 @@ Obrigado por assistir e boas gravações!`;
       const txt = scriptInput.value.trim();
       const words = txt ? txt.split(/\s+/).length : 0;
       const chars = txt.length;
-      charWordCount.textContent = `${words} palavras · ${chars} caracteres`;
+      charWordCount.textContent = words + ' palavras · ' + chars + ' caracteres';
       const minutes = (words / 130).toFixed(1);
-      readingTimeEst.textContent = `Tempo estimado: ~${minutes} min`;
+      readingTimeEst.textContent = 'Tempo estimado: ~' + minutes + ' min';
     }
 
     scriptInput.addEventListener('input', updateCounts);
+    btnSample.addEventListener('click', () => { scriptInput.value = sampleScript; updateCounts(); });
+    btnClear.addEventListener('click', () => { scriptInput.value = ''; updateCounts(); scriptInput.focus(); });
 
-    btnSample.addEventListener('click', () => {
-      scriptInput.value = sampleScript;
-      updateCounts();
-    });
+    // Request wake lock to prevent mobile screen sleeping
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          state.wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {}
+    }
 
-    btnClear.addEventListener('click', () => {
-      scriptInput.value = '';
-      updateCounts();
-      scriptInput.focus();
-    });
+    function releaseWakeLock() {
+      if (state.wakeLock) {
+        state.wakeLock.release().catch(() => {});
+        state.wakeLock = null;
+      }
+    }
 
-    // 1. CONFIRMAÇÃO: A tela de leitura só deve ser ativada após clicar neste botão
+    // Confirmation
     btnConfirm.addEventListener('click', () => {
       const text = scriptInput.value.trim();
       if (!text) {
-        alert('Por favor, digite ou cole um roteiro antes de confirmar.');
+        alert('Por favor, digite ou cole um roteiro antes de continuar.');
         return;
       }
       prompterText.textContent = text;
@@ -585,63 +536,62 @@ Obrigado por assistir e boas gravações!`;
       prompterScreen.style.display = 'block';
       prompterScreen.scrollTop = 0;
       state.scrollAccumulator = 0;
+      
+      // Auto hide hint after 4s
+      setTimeout(() => {
+        if (tapHint) tapHint.style.opacity = '0';
+      }, 4000);
     });
 
-    // Voltar para a tela de edição
     exitBtn.addEventListener('click', () => {
       pausePrompter();
       prompterScreen.style.display = 'none';
       setupScreen.style.display = 'flex';
     });
 
-    // Alternar exibição do HUD
     toggleHudBtn.addEventListener('click', () => {
       hudPanel.classList.toggle('hidden');
-      toggleHudBtn.textContent = hudPanel.classList.contains('hidden') ? 'Mostrar Controles (H)' : 'Ocultar Controles (H)';
     });
 
-    // 2. CONTROLES DE REPRODUÇÃO (Play / Pause)
+    // Tap anywhere on the reading viewport to Play / Pause (Mobile Friendly!)
+    prompterScreen.addEventListener('click', (e) => {
+      if (e.target.closest('#hud-panel, #exit-btn, #toggle-hud-btn')) {
+        return;
+      }
+      togglePlay();
+    });
+
+    // Play / Pause Logic
     function togglePlay() {
       if (state.isPlaying) {
         pausePrompter();
       } else {
-        startPrompterWithCountdown();
+        playPrompter();
       }
     }
 
-    function startPrompterWithCountdown() {
-      countdownOverlay.style.display = 'flex';
-      let count = 3;
-      countdownOverlay.textContent = count;
-      
-      const timer = setInterval(() => {
-        count--;
-        if (count > 0) {
-          countdownOverlay.textContent = count;
-        } else {
-          clearInterval(timer);
-          countdownOverlay.style.display = 'none';
-          playPrompter();
-        }
-      }, 700);
-    }
-
     function playPrompter() {
+      if (state.isPlaying) return;
       state.isPlaying = true;
-      hudPlayBtn.textContent = '⏸ Pausar (Espaço)';
+      requestWakeLock();
+
+      hudPlayBtn.textContent = '⏸ Pausar';
       hudPlayBtn.style.background = '#ef4444';
       hudPlayBtn.style.color = '#ffffff';
 
       let lastTime = performance.now();
-      
-      function scrollStep(currentTime) {
+
+      function scrollLoop(currentTime) {
         if (!state.isPlaying) return;
         const delta = (currentTime - lastTime) / 1000;
         lastTime = currentTime;
 
-        // Velocidade suave em pixels por segundo
-        const pixelsPerSecond = state.speed * 28;
-        state.scrollAccumulator += pixelsPerSecond * delta;
+        // Clamp delta to prevent huge jumps on tab switch / lag spike
+        const safeDelta = Math.min(delta, 0.05);
+
+        // Pixels per second calculation
+        const pxPerSec = state.speed * 26 + 10;
+        state.scrollAccumulator += pxPerSec * safeDelta;
 
         if (state.scrollAccumulator >= 1) {
           const toScroll = Math.floor(state.scrollAccumulator);
@@ -649,51 +599,54 @@ Obrigado por assistir e boas gravações!`;
           state.scrollAccumulator -= toScroll;
         }
 
-        // Verifica se chegou ao fim da página
-        if (prompterScreen.scrollTop + prompterScreen.clientHeight >= prompterScreen.scrollHeight - 5) {
+        // Check if reached bottom ONLY if we actually have room to scroll AND scrolled past 50px
+        const maxScroll = prompterScreen.scrollHeight - prompterScreen.clientHeight;
+        if (maxScroll > 60 && prompterScreen.scrollTop >= maxScroll - 6) {
           pausePrompter();
           return;
         }
 
-        state.animationFrameId = requestAnimationFrame(scrollStep);
+        state.animationFrameId = requestAnimationFrame(scrollLoop);
       }
 
-      state.animationFrameId = requestAnimationFrame(scrollStep);
+      state.animationFrameId = requestAnimationFrame(scrollLoop);
     }
 
     function pausePrompter() {
       state.isPlaying = false;
+      releaseWakeLock();
       if (state.animationFrameId) {
         cancelAnimationFrame(state.animationFrameId);
+        state.animationFrameId = null;
       }
-      hudPlayBtn.textContent = '▶ Iniciar (Espaço)';
+      hudPlayBtn.textContent = '▶ Iniciar';
       hudPlayBtn.style.background = '#facc15';
       hudPlayBtn.style.color = '#000000';
     }
 
-    hudPlayBtn.addEventListener('click', togglePlay);
+    hudPlayBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      togglePlay();
+    });
 
-    // Botão Reiniciar
-    hudRestartBtn.addEventListener('click', () => {
+    hudRestartBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       pausePrompter();
       prompterScreen.scrollTop = 0;
       state.scrollAccumulator = 0;
     });
 
-    // Slider de Velocidade
     speedSlider.addEventListener('input', (e) => {
       state.speed = parseInt(e.target.value, 10);
       speedVal.textContent = state.speed + 'x';
     });
 
-    // Slider de Tamanho da Fonte
     fontSlider.addEventListener('input', (e) => {
       state.fontSize = parseInt(e.target.value, 10);
       fontVal.textContent = state.fontSize + 'px';
       prompterText.style.fontSize = state.fontSize + 'px';
     });
 
-    // 3. RECURSO DE ESPELHAMENTO
     function toggleMirror() {
       state.isMirrored = !state.isMirrored;
       applyMirror();
@@ -703,29 +656,28 @@ Obrigado por assistir e boas gravações!`;
       if (state.isMirrored) {
         prompterContainer.classList.add('mirror-x');
         hudMirrorBtn.classList.add('active');
-        document.getElementById('opt-mirror-val').textContent = 'Ligado';
-        document.getElementById('opt-mirror-val').style.color = '#facc15';
       } else {
         prompterContainer.classList.remove('mirror-x');
         hudMirrorBtn.classList.remove('active');
-        document.getElementById('opt-mirror-val').textContent = 'Desligado';
-        document.getElementById('opt-mirror-val').style.color = '#a3a3a3';
       }
     }
 
-    hudMirrorBtn.addEventListener('click', toggleMirror);
+    hudMirrorBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMirror();
+    });
 
-    // Alternar Cores de Alto Contraste
     const colors = ['#ffffff', '#facc15', '#4ade80', '#38bdf8'];
     let colorIdx = 0;
-    hudColorBtn.addEventListener('click', () => {
+    hudColorBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       colorIdx = (colorIdx + 1) % colors.length;
       state.textColor = colors[colorIdx];
       prompterText.style.color = state.textColor;
     });
 
-    // Alternar Guia Visual de Olhar
-    hudGuideBtn.addEventListener('click', () => {
+    hudGuideBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       state.showGuide = !state.showGuide;
       eyeGuide.style.display = state.showGuide ? 'flex' : 'none';
       hudGuideBtn.classList.toggle('active', state.showGuide);
@@ -737,7 +689,7 @@ Obrigado por assistir e boas gravações!`;
       applyMirror();
     }
 
-    // Atalhos de Teclado
+    // Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
       if (prompterScreen.style.display === 'block') {
         if (e.code === 'Space') {
@@ -767,7 +719,6 @@ Obrigado por assistir e boas gravações!`;
         } else if (e.code === 'KeyH') {
           e.preventDefault();
           hudPanel.classList.toggle('hidden');
-          toggleHudBtn.textContent = hudPanel.classList.contains('hidden') ? 'Mostrar Controles (H)' : 'Ocultar Controles (H)';
         } else if (e.code === 'Escape') {
           e.preventDefault();
           pausePrompter();
